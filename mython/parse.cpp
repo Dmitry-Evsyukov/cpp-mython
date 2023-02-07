@@ -274,7 +274,7 @@ private:
             }
             if (auto it = declared_classes_.find(method_name); it != declared_classes_.end()) {
                 return make_unique<ast::NewInstance>(
-                    static_cast<const runtime::Class&>(*it->second), std::move(args));  // NOLINT
+                    static_cast<runtime::Class&>(*it->second), std::move(args));  // NOLINT
             }
             if (method_name == "str"sv) {
                 if (args.size() != 1) {

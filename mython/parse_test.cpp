@@ -1,8 +1,7 @@
 #include "lexer.h"
 #include "parse.h"
 #include "statement.h"
-
-#include <test_runner.h>
+#include "test_runner_p.h"
 
 using namespace std;
 
@@ -245,6 +244,28 @@ print r, c, t1, t2
                  "Rect(10x20) Circle(52) Triangle(3, 4, 5) Wrong triangle\n"s);
 }
 
+void TestSelfInConstructor() {
+    const string program = (R"--(
+class X:
+  def __init__(p):
+    p.x = self
+class XHolder:
+  def __init__():
+    dummy = 0
+xh = XHolder()
+x = X(xh)
+)--");
+
+    runtime::DummyContext context;
+    runtime::Closure closure;
+    auto tree = ParseProgramFromString(program);
+    tree->Execute(closure, context);
+
+    const auto* xh = closure.at("xh"s).TryAs<runtime::ClassInstance>();
+    ASSERT(xh != nullptr);
+    ASSERT_EQUAL(xh->Fields().at("x"s).Get(), closure.at("x"s).Get());
+}
+
 }  // namespace parse
 
 void TestParseProgram(TestRunner& tr) {
@@ -256,4 +277,5 @@ void TestParseProgram(TestRunner& tr) {
     RUN_TEST(tr, parse::TestRecursion2);
     RUN_TEST(tr, parse::TestComplexLogicalExpression);
     RUN_TEST(tr, parse::TestClassicalPolymorphism);
+    RUN_TEST(tr, parse::TestSelfInConstructor);
 }

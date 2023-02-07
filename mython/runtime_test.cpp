@@ -1,7 +1,7 @@
 #include "runtime.h"
+#include "test_runner_p.h"
 
 #include <functional>
-#include <test_runner.h>
 
 using namespace std;
 
@@ -548,5 +548,5 @@ void RunObjectHolderTests(TestRunner& tr) {
     RUN_TEST(tr, runtime::TestMove);
     RUN_TEST(tr, runtime::TestNullptr);
 }
-
+ 
 }  // namespace runtime
